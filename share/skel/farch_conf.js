@@ -37,6 +37,9 @@ exports.packages = [
   { group: "base" },
   //{ group: "base-devel" },
   //{ external: "farch"},
+
+  //"grub",
+  //"efibootmgr",
 ]
 
 /**

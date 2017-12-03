@@ -1,25 +1,25 @@
 #!/usr/bin/perl
 
-print "Password: ";
+print STDERR "Password: ";
 system("/usr/bin/stty", "-echo");
 $password = <STDIN>;
 chomp($password);
 system("/usr/bin/stty", "echo");
-print "\n";
+print STDERR "\n";
 
-print "Again: ";
+print STDERR "Again: ";
 system("/usr/bin/stty", "-echo");
 $again = <STDIN>;
 chomp($again);
 system("/usr/bin/stty", "echo");
-print "\n";
+print STDERR "\n";
 
 if ($password ne $again) {
-  print "error dont match\n";
+  print STDERR "error dont match\n";
   exit 1;
 }
 
 
 $salt = join "", ('.', '/', 0..9, 'A'..'Z', 'a'..'z')[map {rand 64} (1..16)];
 
-print "\n".crypt($password,"\$6\$".$salt."\$") . "\n";
+print crypt($password,"\$6\$".$salt."\$") . "\n";

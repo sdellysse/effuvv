@@ -11,10 +11,10 @@ Brings the system state in-line with what is specified in your configuration.
   try {
     const argv            = require("minimist")(process.argv.slice(2));
     const changes         = require("../lib/singletons/changes.js");
+    const confPathname    = require("../lib/singletons/conf_pathname.js");
     const getPathOf       = require("../lib/get_path_of.js");
     const install         = require("../lib/install.js");
     const packages        = require("../lib/packages.js");
-    const profileConfPath = require("../lib/singletons/profile_conf_path.js");
     const run             = require("../lib/run.js");
     const services        = require("../lib/services.js");
     const systemstate     = require("../lib/singletons/systemstate");
@@ -30,7 +30,7 @@ Brings the system state in-line with what is specified in your configuration.
       process.exit(1);
     }
 
-    const conf = require(profileConfPath);
+    const conf = require(confPathname);
     await systemstate.load();
 
     const arg = { install, packages, services, run , getPathOf, changes };

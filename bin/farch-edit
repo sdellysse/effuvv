@@ -2,11 +2,11 @@
 global.USAGE = `
 USAGE: farch-edit [-o] [-n] FILE
 
-Copies file(s) from system to the configuration profile and edit it.
+Copies file(s) from system to the configuration and edit it.
 
 Parameters:
   -o:  Overwrite target with new copy of the source
-  -n:  Don't open editor, just copy file to configuration profile
+  -n:  Don't open editor, just copy file to configuration
 
 Environment Variables:
   If $FARCH_EDITOR is set, then that command is used, falling back to $EDITOR.
@@ -19,13 +19,13 @@ global.ARGVOPTS = {
   "use strict";
 
   const argv        = require("minimist")(process.argv.slice(2), global.ARGVOPTS);
+  const configDir   = require("../singletons/config_dir.js");
   const copy        = require("../lib/util/copy.js");
   const exec        = require("util").promisify(require("child_process").exec);
   const exists      = require("../lib/util/exists.js");
   const mkdirp      = require("fs.extra").mkdirp;
   const passthru    = require("../lib/util/passthru.js");
   const path        = require("path");
-  const profileRoot = require("../lib/singletons/profile_paths.js")[0];
 
   if (argv.help) {
     console.log(global.USAGE);
@@ -37,10 +37,10 @@ global.ARGVOPTS = {
   }
 
   const filename = argv._[0];
-  const source = path.resolve(filename, process.cwd(), filename);
-  if (!(await exists.fileOrSymlink(target)) || argv.o) {
-    const target = path.join(profileRoot, source);
 
+  const source = path.resolve(filename, process.cwd(), filename);
+  const target = path.join(configDir, source);
+  if (!(await exists.fileOrSymlink(target)) || argv.o) {
     await mkdirp(path.parse(target).dir);
     if (await exists.fileOrSymlink(source)) {
       await copy(source, target);
@@ -52,6 +52,11 @@ global.ARGVOPTS = {
   }
 
   if (!argv.n) {
-    await passthru(`${ process.env["FARCH_EDITOR"] || process.env["EDITOR"] || "vi" } ${ target }`);
+    const editor = process.env["FARCH_EDITOR"] || process.env["EDITOR"] || "vi";
+    try {
+      await passthru(`${ editor } ${ target }`);
+    } catch (e) {
+      console.log(`could not start editor '${ editor }'`);
+    }
   }
 })();
