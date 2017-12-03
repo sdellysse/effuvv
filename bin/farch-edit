@@ -1,62 +1,112 @@
 #!/usr/bin/env node
 global.USAGE = `
-USAGE: farch-edit [-o] [-n] FILE
+USAGE:
+  farch-edit [-d] [-n] [-o] FILE
+    Copy file from system to configuration and edit it
 
-Copies file(s) from system to the configuration and edit it.
+    Parameters:
+      -d: Don't copy the file from the system, just create the directory
+          structure in the configuration where it should be. Conflicts with '-o'
+      -o: If the file in the configuration already exists, overwrite it with the
+          file from the system. Conflicts with '-d'
+      -n: Don't open $EDITOR against the file in the configuration
 
-Parameters:
-  -o:  Overwrite target with new copy of the source
-  -n:  Don't open editor, just copy file to configuration
+  farch-edit -p [-d] [-o] FILE
+    Copy file from system to configuration and print the filename
+
+    Parameters:
+      -d: Don't copy the file from the system, just create the directory
+          structure in the configuration where it should be. Conflicts with '-o'
+      -o: If the file in the configuration already exists, overwrite it with the
+          file from the system. Conflicts with '-d'
+
+  farch-edit -c
+    Edit the farch_conf.js directly
 
 Environment Variables:
   If $FARCH_EDITOR is set, then that command is used, falling back to $EDITOR.
 `;
 global.ARGVOPTS = {
-  boolean: [ "o", "n" ],
+  boolean: [ "c", "d", "n", "o", "p" ],
 };
 
 (async () => {
   "use strict";
 
-  const argv        = require("minimist")(process.argv.slice(2), global.ARGVOPTS);
-  const configDir   = require("../singletons/config_dir.js");
-  const copy        = require("../lib/util/copy.js");
-  const exec        = require("util").promisify(require("child_process").exec);
-  const exists      = require("../lib/util/exists.js");
-  const mkdirp      = require("fs.extra").mkdirp;
-  const passthru    = require("../lib/util/passthru.js");
-  const path        = require("path");
+  const argv         = require("minimist")(process.argv.slice(2), global.ARGVOPTS);
+  const confPathname = require("../lib/singletons/conf_pathname.js");
+  const configDir    = require("../lib/singletons/config_dir.js");
+  const copy         = require("../lib/util/copy.js");
+  const exec         = require("util").promisify(require("child_process").exec);
+  const exists       = require("../lib/util/exists.js");
+  const mkdirp       = require("fs.extra").mkdirp;
+  const passthru     = require("../lib/util/passthru.js");
+  const path         = require("path");
+
+  const edit = async (pathname) => {
+    const editor = process.env["FARCH_EDITOR"] || process.env["EDITOR"] || "vi";
+    console.error(`EDITOR: ${ editor }`);
+
+    const command = `${ editor } ${ pathname }`;
+    console.error(`COMMAND: ${ command }`);
+    await passthru(command);
+  }
+
+  const sourceAndTarget = (filename) => {
+    const source = path.resolve(filename, process.cwd(), filename);
+    console.error(`SOURCE-PATHNAME: ${ source }`);
+
+    const target = path.join(configDir, source);
+    console.error(`TARGET-PATHNAME: ${ target }`);
+
+    return { source, target };
+  };
+
+  const placeFile = async (source, target) => {
+    await mkdirp(path.parse(target).dir);
+    if (!argv.d && (argv.o || !(await exists.fileOrSymlink(target)))) {
+      if (await exists.fileOrSymlink(source)) {
+        console.error(`COPY: ${ source } -> ${ target }`);
+        await copy(source, target);
+      } else {
+        console.error(`CREATE-FILE: ${ target }`);
+        await exec(`touch ${ target }`);
+      }
+    } else {
+      console.error(`NO-CHANGE: ${ target }`);
+    }
+  };
 
   if (argv.help) {
-    console.log(global.USAGE);
+    console.error(global.USAGE);
     process.exit(0);
   }
-  if (argv._.length !== 1) {
-    console.log(global.USAGE);
-    process.exit(1);
-  }
 
-  const filename = argv._[0];
+  if(0){
+  } else if (argv.c) {
+    await edit(confPathname);
 
-  const source = path.resolve(filename, process.cwd(), filename);
-  const target = path.join(configDir, source);
-  if (!(await exists.fileOrSymlink(target)) || argv.o) {
-    await mkdirp(path.parse(target).dir);
-    if (await exists.fileOrSymlink(source)) {
-      await copy(source, target);
-      console.log(`${ source } -> ${ target }`);
-    } else {
-      await exec(`touch ${ target }`);
-      console.log(`NEW FILE -> ${ target }`);
+  } else if (argv.p) {
+    if (argv._.length !== 1 || (argv.d && argv.o)) {
+      console.error(global.USAGE);
+      process.exit(1);
     }
-  }
 
-  if (!argv.n) {
-    const editor = process.env["FARCH_EDITOR"] || process.env["EDITOR"] || "vi";
-    try {
-      await passthru(`${ editor } ${ target }`);
-    } catch (e) {
-      console.log(`could not start editor '${ editor }'`);
+    const { source, target } = sourceAndTarget(argv._[0]);
+    await placeFile(source, target);
+
+    console.log(target);
+  } else {
+    if (argv._.length !== 1 || (argv.d && argv.o)) {
+      console.error(global.USAGE);
+      process.exit(1);
+    }
+
+    const { source, target } = sourceAndTarget(argv._[0]);
+    await placeFile(source, target);
+
+    if (!argv.n) {
+      await edit(target);
     }
   }
 })();

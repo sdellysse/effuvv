@@ -30,9 +30,6 @@ farch-take to pull files from the system into farch to be edited).
   };
 
   const files = [
-    "/etc/fstab",
-    "/etc/locale.gen",
-    "/etc/localtime",
     "/etc/pacman.conf",
     "/etc/pacman.d/mirrorlist",
   ];

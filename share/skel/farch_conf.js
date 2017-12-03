@@ -8,21 +8,7 @@ exports.beforePackages = async ({ install, run, changes }) => {
   await install([
     "/etc/pacman.conf",
     "/etc/pacman.d/mirrorlist",
-    "/etc/locale.gen",
-    "/etc/localtime",
-    //"/etc/locale.conf",
-    //"/etc/hostname",
-    //"/etc/hosts",
-    //"/etc/makepkg.conf",
   ])
-
-  if (changes.files["/etc/localtime"]) {
-    await run("hwclock --systohc")
-  }
-
-  if (changes.files["/etc/locale.gen"]) {
-    await run("locale-gen")
-  }
 }
 
 /**
@@ -34,12 +20,9 @@ exports.beforePackages = async ({ install, run, changes }) => {
  * dependencies are left untouched.
  */
 exports.packages = [
+  { external: "farch"},
   { group: "base" },
   //{ group: "base-devel" },
-  //{ external: "farch"},
-
-  //"grub",
-  //"efibootmgr",
 ]
 
 /**
@@ -48,22 +31,7 @@ exports.packages = [
  */
 exports.afterPackages = async ({ install, run, changes }) => {
   await install([
-    "/etc/fstab",
-    //"/etc/sudoers",
-    //"/etc/mkinitcpio.conf",
-    //"/etc/default/grub",
   ])
-
-  //if (changes.files["/etc/mkinitcpio.conf"]) {
-  //  await run("mkinitcpio -p linux")
-  //}
-  //
-  //if (changes.files["/etc/default/grub"]) {
-  //  await run("grub-mkconfig -o /boot/grub/grub.cfg")
-  //}
-  //if (changes.packages.added["grub"]) {
-  //  await run("grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub");
-  //}
 }
 
 /**
@@ -93,7 +61,5 @@ exports.usersAndGroups = {
  * or disable/stop services outside of this hook.
  */
 exports.services = [
-  //"NetworkManager.service",
   //"fstrim.timer",
-  //"lightdm.service",
 ]
