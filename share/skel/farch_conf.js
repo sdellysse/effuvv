@@ -43,15 +43,13 @@ exports.afterPackages = async ({ install, run, changes }) => {
 exports.usersAndGroups = {
   users: {
     root: {
-      encryptedPassword: "$6$gHolADlWgcbf4QkG$3Pt.bqHP2yMo9hhiMDQvMENjIpwnn8w.NjIEfhPl17j5oUQoZjlt/t3YOLhFzSHCU7r4tFYREqMSTVn/weVoj1",
-      shell: "/bin/bash",
+      //encryptedPassword: "$6$gHolADlWgcbf4QkG$3Pt.bqHP2yMo9hhiMDQvMENjIpwnn8w.NjIEfhPl17j5oUQoZjlt/t3YOLhFzSHCU7r4tFYREqMSTVn/weVoj1",
     },
 
-    shawn: {
-      encryptedPassword: "$6$gHolADlWgcbf4QkG$3Pt.bqHP2yMo9hhiMDQvMENjIpwnn8w.NjIEfhPl17j5oUQoZjlt/t3YOLhFzSHCU7r4tFYREqMSTVn/weVoj1",
-      groups: [ "wheel" ],
-      shell: "/bin/bash",
-    },
+    //shawn: {
+    //  encryptedPassword: "$6$gHolADlWgcbf4QkG$3Pt.bqHP2yMo9hhiMDQvMENjIpwnn8w.NjIEfhPl17j5oUQoZjlt/t3YOLhFzSHCU7r4tFYREqMSTVn/weVoj1",
+    //  groups: [ "wheel" ],
+    //},
   },
 };
 
