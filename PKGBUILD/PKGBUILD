@@ -1,6 +1,6 @@
 # Maintainer : Shawn Dellysse sdellysse@gmail.com
 pkgname=farch
-pkgver=0.0.20171203
+pkgver=0.0.20171203a
 pkgrel=1
 pkgdesc="Functional archlinux system configuration tool"
 url="https://github.com/shawndellysse/farch"
@@ -8,7 +8,7 @@ arch=("any")
 depends=("nodejs")
 makedepends=("npm")
 source=("https://github.com/shawndellysse/farch/archive/v${pkgver}.tar.gz")
-md5sums=('8a4f9b655a9d110902e4956e79c0b2b8')
+md5sums=('5d6fa24308e52edbac9e5ca421f0da81')
 
 build() {
   cd "${srcdir}/${pkgname}-${pkgver}"
