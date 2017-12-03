@@ -30,7 +30,7 @@ Immediately do this:
 
 ```
 # cd /tmp
-# curl http://farch-pkg.shawndellysse.com -o farch.tar.xz
+# curl -L http://farch-pkg.shawndellysse.com -o farch.tar.xz
 # pacman -U farch.tar.xz
 # rm farch.tar.xz
 # farch-init
