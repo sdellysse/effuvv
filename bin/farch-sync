@@ -1,0 +1,64 @@
+#!/usr/bin/env node
+global.USAGE = `
+USAGE: farch-sync
+
+Brings the system state in-line with what is specified in your configuration.
+`;
+
+(async () => {
+  "use strict";
+
+  try {
+    const argv            = require("minimist")(process.argv.slice(2));
+    const changes         = require("../lib/singletons/changes.js");
+    const getPathOf       = require("../lib/get_path_of.js");
+    const install         = require("../lib/install.js");
+    const packages        = require("../lib/packages.js");
+    const profileConfPath = require("../lib/singletons/profile_conf_path.js");
+    const run             = require("../lib/run.js");
+    const services        = require("../lib/services.js");
+    const systemstate     = require("../lib/singletons/systemstate");
+    const usersAndGroups  = require("../lib/users_and_groups.js");
+
+    if (argv.help) {
+      console.log(global.USAGE);
+      process.exit(0);
+    }
+
+    if (process.env["USER"] !== "root") {
+      console.error("farch-sync must be ran as root");
+      process.exit(1);
+    }
+
+    const conf = require(profileConfPath);
+    await systemstate.load();
+
+    const arg = { install, packages, services, run , getPathOf, changes };
+
+    if (conf.beforePackages) {
+      await conf.beforePackages(arg);
+    }
+
+    if (conf.packages) {
+      await packages(conf.packages);
+    }
+
+    if (conf.afterPackages) {
+      await conf.afterPackages(arg);
+    }
+
+    if (conf.usersAndGroups) {
+      await usersAndGroups(conf.usersAndGroups);
+    }
+
+    if (conf.services) {
+      await services(conf.services);
+    }
+
+    await systemstate.save();
+  } catch (e) {
+    console.error("error occurred:", e.message);
+    console.error(e.stack);
+    process.exit(1);
+  }
+})();

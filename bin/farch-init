@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+global.USAGE = `
+USAGE: farch-init
+
+Creates the /farch directory with a basic example configuration. This will need
+to be edited (ie., changing the name of the profile) or added to (ie., using
+farch-take to pull files from the system into farch to be edited).
+`;
+
+(async () => {
+  const argv        = require("minimist")(process.argv.slice(2));
+  const configDir   = require("../lib/singletons/config_dir.js");
+  const copy        = require("../lib/util/copy.js");
+  const mkdirp      = require("fs.extra").mkdirp;
+  const passthru    = require("../lib/util/passthru.js");
+  const systemstate = require("../lib/singletons/systemstate.js");
+
+  if (argv.help) {
+    console.log(global.USAGE);
+    process.exit(0);
+  }
+
+  await mkdirp(configDir);
+  await mkdirp(workingDir);
+  await systemstate.save();
+
+  await mkdirp(`${ configDir }/profiles`);
+  await mkdirp(`${ configDir }/profiles/default`);
+
+  {
+    const source = require.resolve("../share/skel/farch_conf.js")
+    const target = `${ configDir }/profiles/default/farch_conf.js`;
+    await copy(source, target);
+    console.log(`${ source } -> ${ target }`);
+  };
+
+  const files = [
+    "/etc/fstab",
+    "/etc/locale.gen",
+    "/etc/localtime",
+    "/etc/pacman.conf",
+    "/etc/pacman.d/mirrorlist",
+  ];
+  await Promise.all(files.map(async (it) => await exec(`farch-edit -o -n ${ it }`)));
+})();

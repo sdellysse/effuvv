@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+global.USAGE = `
+USAGE: farch-edit [-o] [-n] FILE
+
+Copies file(s) from system to the configuration profile and edit it.
+
+Parameters:
+  -o:  Overwrite target with new copy of the source
+  -n:  Don't open editor, just copy file to configuration profile
+
+Environment Variables:
+  If $FARCH_EDITOR is set, then that command is used, falling back to $EDITOR.
+`;
+global.ARGVOPTS = {
+  boolean: [ "o", "n" ],
+};
+
+(async () => {
+  "use strict";
+
+  const argv        = require("minimist")(process.argv.slice(2), global.ARGVOPTS);
+  const copy        = require("../lib/util/copy.js");
+  const exec        = require("util").promisify(require("child_process").exec);
+  const exists      = require("../lib/util/exists.js");
+  const mkdirp      = require("fs.extra").mkdirp;
+  const passthru    = require("../lib/util/passthru.js");
+  const path        = require("path");
+  const profileRoot = require("../lib/singletons/profile_paths.js")[0];
+
+  if (argv.help) {
+    console.log(global.USAGE);
+    process.exit(0);
+  }
+  if (argv._.length !== 1) {
+    console.log(global.USAGE);
+    process.exit(1);
+  }
+
+  const filename = argv._[0];
+  const source = path.resolve(filename, process.cwd(), filename);
+  if (!(await exists.fileOrSymlink(target)) || argv.o) {
+    const target = path.join(profileRoot, source);
+
+    await mkdirp(path.parse(target).dir);
+    if (await exists.fileOrSymlink(source)) {
+      await copy(source, target);
+      console.log(`${ source } -> ${ target }`);
+    } else {
+      await exec(`touch ${ target }`);
+      console.log(`NEW FILE -> ${ target }`);
+    }
+  }
+
+  if (!argv.n) {
+    await passthru(`${ process.env["FARCH_EDITOR"] || process.env["EDITOR"] || "vi" } ${ target }`);
+  }
+})();
