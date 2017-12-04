@@ -11,14 +11,9 @@ Brings the system state in-line with what is specified in your configuration.
   try {
     const argv            = require("minimist")(process.argv.slice(2));
     const changes         = require("../lib/singletons/changes.js");
+    const commands        = require("require-tree")("../lib/commands");
     const confPathname    = require("../lib/singletons/conf_pathname.js");
-    const install         = require("../lib/commands/install.js");
-    const packages        = require("../lib/commands/packages.js");
-    const restartService  = require("../lib/commands/restart_service.js");
-    const run             = require("../lib/commands/run.js");
-    const services        = require("../lib/commands/services.js");
     const systemstate     = require("../lib/singletons/systemstate");
-    const usersAndGroups  = require("../lib/commands/users_and_groups.js");
 
     if (argv.help) {
       console.log(global.USAGE);
@@ -33,7 +28,10 @@ Brings the system state in-line with what is specified in your configuration.
     const conf = require(confPathname);
     await systemstate.load();
 
-    const arg = { install, packages, services, run, restartService, changes, systemstate };
+    const arg = Object.assign({}, commands, {
+      changes,
+      systemstate,
+    });
 
     if (conf.beforePackages) {
       await conf.beforePackages(arg);
