@@ -19,6 +19,19 @@ bugs are being found every day. It's usable, but only if you wanna tinker.
 Hopefully one day I can remove this warning but I don't know if it'll come. That
 being said, it's not that scary once you get the hang of it.
 
+
+### Prior art / Rationale
+
+NixOS is a big influence in this project. NixOS makes the functional operating
+system perfect; that is, everything fits perfectly into the NixOS world. The
+downside of this perfection is that it's not an easy to transfer an existing
+linux skill set into working NixOS skills. 
+
+I wanted a tool that let me express my archlinux system in terms of a single set
+of configuration files / directives, similar to NixOS, but one that didn't
+require me to throw away all the time and energy that has gone into building
+such a great distro like Arch.
+
 ## Tutorial
 
 Arch Install Guide: `https://wiki.archlinux.org/index.php/installation_guide`
