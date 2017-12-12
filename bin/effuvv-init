@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 global.USAGE = `
-USAGE: farch-init
+USAGE: effuvv-init
 
-Creates the /farch directory with a basic example configuration. This will need
+Creates the /effuvv directory with a basic example configuration. This will need
 to be modified.
 `;
 
@@ -20,11 +20,11 @@ to be modified.
 
   await mkdirp(configDir);
 
-  const source = require.resolve("../share/skel/farch_conf.js")
-  const target = `${ configDir }/farch_conf.js`;
+  const source = require.resolve("../share/skel/effuvv_conf.js")
+  const target = `${ configDir }/effuvv_conf.js`;
   await copy(source, target);
   console.log(`${ source } -> ${ target }`);
 
-  await passthru("farch-edit -o -n /etc/pacman.conf");
-  await passthru("farch-edit -o -n /etc/pacman.d/mirrorlist");
+  await passthru("effuvv-edit -o -n /etc/pacman.conf");
+  await passthru("effuvv-edit -o -n /etc/pacman.d/mirrorlist");
 })();

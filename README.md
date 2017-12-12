@@ -1,14 +1,14 @@
 Don't use on an existing installation. Theoretically, it can work, but
 theoretically I could become a millionaire.
 
-## What is farch?
+## What is effuvv?
 
-`farch` stands for "functional arch". It allows (and requires) you to express
-your arch linux installation in the terms of a function of a configuration. 
-Essentially, you have a set of configuration files that you would normally edit,
-such as /farch/etc/fstab and /farch/etc/default/grub, and a main config file, 
-`/farch/farch_config.js` that specifies how everything should be bound together,
-and a tool, `farch-sync`, that makes sure the system reflects your
+`effuvv` is "functional arch". It allows (and requires) you to express your arch
+linux installation in the terms of a function of a configuration.  Essentially,
+you have a set of configuration files that you would normally edit, such as
+/effuvv/etc/fstab and /effuvv/etc/default/grub, and a main config file, 
+`/effuvv/effuvv_config.js` that specifies how everything should be bound together,
+and a tool, `effuvv-sync`, that makes sure the system reflects your
 configuration.
 
 # WARNING
@@ -38,20 +38,20 @@ Arch Install Guide: `https://wiki.archlinux.org/index.php/installation_guide`
 
 Follow the Arch Install Guide up to the part about `pacstrap`. Do
 `pacstrap /mnt base` (just `base`, nothing more as we want to only have the most
-minimal outside-of-farch system possible), and then chroot into the new install.
+minimal outside-of-effuvv system possible), and then chroot into the new install.
 Immediately do this:
 
 ```
 # cd /tmp
-# curl -L http://farch-pkg.shawndellysse.com -o farch.tar.xz
-# pacman -U farch.tar.xz
-# rm farch.tar.xz
-# farch-init
+# curl -L http://effuvv-pkg.shawndellysse.com -o effuvv.tar.xz
+# pacman -U effuvv.tar.xz
+# rm effuvv.tar.xz
+# effuvv-init
 ```
 
-Now farch is intalled on your system. `farch-init` has created an extremely
+Now effuvv is intalled on your system. `effuvv-init` has created an extremely
 basic skeleton configuration. Now we're going to follow the next few steps of
-the install guide, but showing how they're done in farch.
+the install guide, but showing how they're done in effuvv.
 
 First step, let's deviate from the guide for a moment and install `vim`. We're
 doing this now to both show the packaged installation workflow and also to fix
@@ -59,16 +59,16 @@ the fact that Arch sets `$EDITOR` to that by default, even though it's not
 installed by default. Run 
 
 ```
-# EDITOR=vi farch-edit -c
+# EDITOR=vi effuvv-edit -c
 ```
 
-to open the farch configuration in `vi`.
+to open the effuvv configuration in `vi`.
 
 Scroll down to the `packages` array, and add `"vim",` to the end of the array:
 
 ```
 exports.packages = [
-  {external: "farch"},
+  {external: "effuvv"},
   {group: "base"},
   //{group: "base-devel"},
 
@@ -84,11 +84,11 @@ take this time to uncomment the `base-devel` group if you like. Note the special
 syntax for specifying packages groups that should be on the system, and ignore
 the `external` clause for now, we'll get to that later. (TODO Later Text:
 `external` clauses mark packages that aren't controlled by this tool. Examples
-are farch, which was installed from a url, and AUR packages. You need to add
-them here so that farch doesn't remove them or their dependencies when
-`farch-sync` is ran.)
+are effuvv, which was installed from a url, and AUR packages. You need to add
+them here so that effuvv doesn't remove them or their dependencies when
+`effuvv-sync` is ran.)
 
-Close `vi` and run `farch-sync`. This is the only farch command that alters your
+Close `vi` and run `effuvv-sync`. This is the only effuvv command that alters your
 system. This execution of it should see that you want `vim` to be installed, and
 right now it isn't, and it should bring the system in line with what your
 configuration demands.
@@ -96,34 +96,34 @@ configuration demands.
 ### Fstab
 
 The next step in the guide is to append some generated stuff to the fstab. In
-farch, we don't touch anything outside /farch or /home (or other state
+effuvv, we don't touch anything outside /effuvv or /home (or other state
 directories), so let's pull fstab into our config.
 
 ```
-# farch-edit -n /etc/fstab
+# effuvv-edit -n /etc/fstab
 ```
 
-`farch-edit` copies a file from the system into the correct place of the config
-(in this case it gets placed in `/farch/etc/fstab`) and lets you edit the file.
+`effuvv-edit` copies a file from the system into the correct place of the config
+(in this case it gets placed in `/effuvv/etc/fstab`) and lets you edit the file.
 In this case, we don't want to edit the file right now, so we pass `-n` to tell
 it not to run `$EDITOR`.
 
 Exit the chroot and append the generated entries to our config:
 
 ```
-# genfstab -U /mnt >> /mnt/farch/etc/fstab
+# genfstab -U /mnt >> /mnt/effuvv/etc/fstab
 ```
 
 Re-enter the chroot and check the file.
 
 ```
-# farch-edit /etc/fstab
+# effuvv-edit /etc/fstab
 ```
 
 Now we need to tell the configuration to install this file. Run
 
 ```
-# farch-edit -c
+# effuvv-edit -c
 ```
 
 and in the `install` array of the `afterPackages` clause, add the file:
@@ -147,11 +147,11 @@ Next step in the guide is to set the time zone. For this, we don't want to copy
 a file from the system:
 
 ```
-# ln -sf /usr/share/zoneinfo/Region/City "$( farch-edit -d -p /etc/localtime )"
+# ln -sf /usr/share/zoneinfo/Region/City "$( effuvv-edit -d -p /etc/localtime )"
 ```
 
 This line creates a symlink to the City you specify into the right location in
-the configuration. `farch-edit -d -p`'s `-d` doesn't actually copy the file from
+the configuration. `effuvv-edit -d -p`'s `-d` doesn't actually copy the file from
 the system but instead just gets the configuration's directory structure ready,
 and the `-p` prints the location of where the file would be in the configuration
 instead of attempting to edit it. We combine this with shell subsitition for 
@@ -186,8 +186,8 @@ here now that we have the pattern down.
 Copy the file to the configuration and make your changes:
 
 ```
-# farch-edit /etc/locale.gen
-# farch-edit /etc/locale.conf
+# effuvv-edit /etc/locale.gen
+# effuvv-edit /etc/locale.conf
 ```
 
 Update the `beforePackages` clause:
@@ -213,12 +213,12 @@ exports.beforePackages = async ({ install, run, changes }) => {
 
 ### Hostname
 
-Note that if the file doesn't exist on the system, `farch-edit` will create one
+Note that if the file doesn't exist on the system, `effuvv-edit` will create one
 in the configuration:
 
 ```
-# farch-edit /etc/hostname
-# farch-edit /etc/hosts
+# effuvv-edit /etc/hostname
+# effuvv-edit /etc/hosts
 ```
 
 Add both of these files to the `beforePackages` clause.
@@ -232,7 +232,7 @@ Should be able to tackle this yourself now
 How I handle this is like this, if you need to have a custom initramfs:
 
 ```
-# farch-edit /etc/mkinitcpio.conf
+# effuvv-edit /etc/mkinitcpio.conf
 ```
 
 `afterPackages` clause looks something like this:
@@ -254,13 +254,13 @@ This way the initramfs will only be rebuilt if you change the source file.
 
 ### Users and Passwords
 
-Okay this is pretty cool. Included in farch is a tool that generated encrypted
-password strings, `farch-mkpasswd`. Protip: to get that big string into the 
+Okay this is pretty cool. Included in effuvv is a tool that generated encrypted
+password strings, `effuvv-mkpasswd`. Protip: to get that big string into the 
 configuration without copy and paste, close your editor and do:
 
 ```
-# farch-mkpasswd >> /farch/farch_conf.js
-# farch-edit -c
+# effuvv-mkpasswd >> /effuvv/effuvv_conf.js
+# effuvv-edit -c
 ```
 
 The password hash will now be at the end of the file. Move that string up inside
@@ -281,7 +281,7 @@ exports.usersAndGroups = {
 }
 ```
 
-`farch-sync` will then make sure that the users in the system match the users in
+`effuvv-sync` will then make sure that the users in the system match the users in
 the configuration.
 
 ### Boot loader
@@ -329,7 +329,7 @@ exports.afterPackages = async ({ install, run, changes }) => {
 ### Sudoers
 
 ```
-# EDITOR="visudo -f" farch-edit /etc/sudoers
+# EDITOR="visudo -f" effuvv-edit /etc/sudoers
 ```
 
 

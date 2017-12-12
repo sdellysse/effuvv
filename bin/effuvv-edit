@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 global.USAGE = `
 USAGE:
-  farch-edit [-d] [-n] [-o] FILE
+  effuvv-edit [-d] [-n] [-o] FILE
     Copy file from system to configuration and edit it
 
     Parameters:
@@ -11,7 +11,7 @@ USAGE:
           file from the system. Conflicts with '-d'
       -n: Don't open $EDITOR against the file in the configuration
 
-  farch-edit -p [-d] [-o] FILE
+  effuvv-edit -p [-d] [-o] FILE
     Copy file from system to configuration and print the filename
 
     Parameters:
@@ -20,8 +20,8 @@ USAGE:
       -o: If the file in the configuration already exists, overwrite it with the
           file from the system. Conflicts with '-d'
 
-  farch-edit -c
-    Edit the farch_conf.js directly
+  effuvv-edit -c
+    Edit the effuvv_conf.js directly
 
 Environment Variables:
   If $FARCH_EDITOR is set, then that command is used, falling back to $EDITOR.

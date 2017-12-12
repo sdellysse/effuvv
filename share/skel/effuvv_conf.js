@@ -20,7 +20,7 @@ exports.beforePackages = async ({ install, run, changes }) => {
  * dependencies are left untouched.
  */
 exports.packages = [
-  { external: "farch"},
+  { external: "effuvv"},
   { group: "base" },
   //{ group: "base-devel" },
 ]
@@ -36,7 +36,7 @@ exports.afterPackages = async ({ install, run, changes }) => {
 
 /**
  * This function is run after the afterPackages hook. To get the values for
- * hashedPassword, run farch-mkpasswd and paste the values here. It is
+ * hashedPassword, run effuvv-mkpasswd and paste the values here. It is
  * imperative to not modify these users/groups outside this configuration. Both
  * of the following passwords are "foo".
  */

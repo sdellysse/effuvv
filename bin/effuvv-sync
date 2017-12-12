@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 global.USAGE = `
-USAGE: farch-sync
+USAGE: effuvv-sync
 
 Brings the system state in-line with what is specified in your configuration.
 `;
@@ -21,7 +21,7 @@ Brings the system state in-line with what is specified in your configuration.
     }
 
     if (process.env["USER"] !== "root") {
-      console.error("farch-sync must be ran as root");
+      console.error("effuvv-sync must be ran as root");
       process.exit(1);
     }
 
