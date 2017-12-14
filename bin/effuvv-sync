@@ -46,7 +46,11 @@ Brings the system state in-line with what is specified in your configuration.
     }
 
     if (conf.packages) {
-      await commands.packages(conf.packages);
+      if (typeof(conf.packages) === "function") {
+        await conf.packages(arg);
+      } else {
+        await commands.packages(conf.packages);
+      }
     }
 
     if (conf.afterPackages) {
@@ -54,11 +58,19 @@ Brings the system state in-line with what is specified in your configuration.
     }
 
     if (conf.usersAndGroups) {
-      await commands.usersAndGroups(conf.usersAndGroups);
+      if (typeof(conf.usersAndGroups) === "function") {
+        await conf.usersAndGroups(arg);
+      } else {
+        await commands.usersAndGroups(conf.usersAndGroups);
+      }
     }
 
     if (conf.services) {
-      await commands.services(conf.services);
+      if (typeof(conf.services) === "function") {
+        await conf.services(arg);
+      } else {
+        await commands.services(conf.services);
+      }
     }
 
     await systemstate.save();
