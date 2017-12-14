@@ -2,5 +2,5 @@
 
 /node_modules
 
-/share/PKGBUILD/*
-!/share/PKGBUILD/PKGBUILD
+/PKGBUILD/*
+!/PKGBUILD/PKGBUILD
